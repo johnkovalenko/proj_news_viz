@@ -10,8 +10,6 @@ import os
 import logging
 import hashlib
 
-FETCH_TIMEOUT = 3
-
 logging.basicConfig(
     format="%(asctime)s [%(threadName)-12.12s][%(levelname)-5.5s] %(message)s",
     handlers=[
@@ -29,8 +27,10 @@ def hashit(s):
 
 def _parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str, default='data/parser/lists/files_to_download.txt')
-    parser.add_argument('--output', type=str, default='data/parser/downloaded/')
+    parser.add_argument('--input', type=str,
+                        default='data/parser/lists/files_to_download.txt')
+    parser.add_argument('--output', type=str,
+                        default='data/parser/downloaded/')
     parser.add_argument('--interval', type=int, default=60)
 
     return parser.parse_args()
@@ -39,7 +39,7 @@ def _parse_args():
 async def fetch(url, session, outpath):
     try:
         async with session.get(url) as response:
-            body = await asyncio.wait_for(response.read(), FETCH_TIMEOUT)
+            body = await response.read()
             with gzip.open(outpath, 'w') as fout:
                 fout.write(body)
                 logging.info('{} success {}'.format(url, outpath))
