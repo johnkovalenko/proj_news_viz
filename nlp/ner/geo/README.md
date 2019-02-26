@@ -8,9 +8,11 @@
 - scrapy http://geoportalwiki.wikidot.com/ and examine results.  
 - merge https://github.com/mfursov/russian-cities/blob/master/database/cities_inflection.csv with relevant file of already extracted entities.  
   
-#### Files:
-<file name>     <lines>     <description>
-cities_rf.csv   (183 554) - cities of Russian Federation.  
-countries.csv   (280)     - countries, global.  
-geo.csv         (180 136) - mixed data with names of locations (villages, cities, objects, regions)  
-regions_rf.csv  (27)      - a little bit of regions of Russian Federation.  
+#### Files:  
+
+| file name | lines | description |
+|------------|---------|---------------|
+| cities_rf.csv | 183 554 | cities of Russian Federation |
+| countries.csv | 280 | countries, global |
+| geo.csv       | 180 136 | mixed data with names of locations (villages, cities, objects, regions) |
+| regions_rf.csv | 27 | a little bit of regions of Russian Federation |
