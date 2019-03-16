@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import requests
+from time import sleep
 from bs4 import BeautifulSoup as bs
 from typing import List, Tuple
 
@@ -11,10 +12,17 @@ def _concat_url(url: str, postfixes: Tuple[str]):
     return [url + postfix for postfix in postfixes]
 
 
+def _responsible_scraping(url, pause):
+    '''Make a sleep in between the requests.
+    '''
+    sleep(pause)
+    return requests.get(url)
+
+
 def _get_responses(urls: List[str]) -> List:
     '''Make a list of responses.
     '''
-    return [requests.get(url) for url in urls]
+    return [_responsible_scraping(url, 1) for url in urls]
 
 
 def _into_text(responses: List) -> List:
