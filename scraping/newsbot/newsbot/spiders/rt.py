@@ -22,25 +22,31 @@ class RussiaTodaySpider(NewsSpider):
         # description.
     )
 
+    def _parse_xml(self, response, main=None):
+        '''Wrap parsing sitemap.xml or sub-sitemaps.
+        '''
+        body = response.body
+        links = Selector(text=body).xpath('//loc/text()')
+
+        for link in links.getall():
+            if main:
+                yield link
+            else:
+                yield Request(url=link,
+                              callback=self.parse_document)
+
     def parse(self, response):
         '''Firstly, parse main sitemap.xml, which has a sub-sitemaps.
+
+        If it is a sub_sitemap then extract articles and parse them with
+        super().parse_document.
         '''
-        body = response.body
-        links = Selector(text=body).xpath('//loc/text()').getall()
+        sitemaps = self._parse_xml(response, main=True)
 
-        for link in links:
-            yield Request(url=link,
-                          callback=self.parse_sitemap)
-
-    def parse_sitemap(self, response):
-        '''Parse sub-sitemaps, get articles` links.
-        '''
-        body = response.body
-        links = Selector(text=body).xpath('//loc/text()').getall()
-
-        for link in links:
-            yield Request(url=link,
-                          callback=self.parse_document)
+        for sitemap in sitemaps:
+            # TO-DO: before an article checking sitemap with until_date.
+            yield Request(url=sitemap,
+                          callback=self._parse_xml)
 
     def _fix_syntax(self, sample: List[str], idx_split: int) -> List[str]:
         '''Fix timestamp syntax, droping timezone postfix.
