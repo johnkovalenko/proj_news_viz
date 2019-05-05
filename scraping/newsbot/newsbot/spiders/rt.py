@@ -6,7 +6,7 @@ from datetime import date
 
 
 class RussiaTodaySpider(NewsSpider):
-    name = 'rt'
+    name = 'rt_bydate'
 
     start_urls = ['https://russian.rt.com/sitemap.xml']
 
@@ -18,51 +18,44 @@ class RussiaTodaySpider(NewsSpider):
         text_path='//div[contains(@class, "article__text")]//text()',
         topics_path='//meta'
         '[contains(@name, "mediator_theme")]/@content'
-        # TO-DO: check topics_path if needed to change mediator_theme by
-        # description.
     )
 
-    def _parse_xml(self, response, main=None):
-        '''Wrap parsing sitemap.xml or sub-sitemaps.
-        '''
-        body = response.body
-        links = Selector(text=body).xpath('//loc/text()')
-
-        for link in links.getall():
-            if main:
-                yield link
-            else:
-                yield Request(url=link,
-                              callback=self.parse_document)
-
     def parse(self, response):
-        '''Firstly, parse main sitemap.xml, which has a sub-sitemaps.
+        """Parse first main sitemap.xml by initial parsing method.
+        Getting sub_sitemaps.
+        """
+        body = response.body
+        links = Selector(text=body).xpath('//loc/text()').getall()
 
-        If it is a sub_sitemap then extract articles and parse them with
-        super().parse_document.
-        '''
-        sitemaps = self._parse_xml(response, main=True)
+        for link in links:
+            yield Request(url=link,
+                          callback=self.parse_sitemap)
 
-        for sitemap in sitemaps:
-            # TO-DO: before an article checking sitemap with until_date.
-            yield Request(url=sitemap,
-                          callback=self._parse_xml)
+    def parse_sitemap(self, response):
+        """Parse each sub_sitemap.
+        """
+        body = response.body
+        links = Selector(text=body).xpath('//loc/text()').getall()
+
+        for link in links:
+            yield Request(url=link,
+                          callback=self.parse_document)
 
     def _fix_syntax(self, sample: List[str], idx_split: int) -> List[str]:
-        '''Fix timestamp syntax, droping timezone postfix.
-        '''
+        """Fix timestamp syntax, droping timezone postfix.
+        """
         sample = [sample[0][:idx_split]]
         return sample
 
     def _get_date(self, lst: List[str]):
-        '''Convert list into date obj.
-        '''
+        """Convert list into date obj.
+        """
         y, m, d = [int(num) for num in lst]
         return date(y, m, d)
 
     def parse_document(self, response):
-        '''Finally, parse each article.
-        '''
+        """Final parsing method.
+        Parse each article."""
         for item in super().parse_document(response):
 
             # Try to drop timezone postfix.
@@ -71,8 +64,8 @@ class RussiaTodaySpider(NewsSpider):
             except KeyError:
                 print('Error. No date value.')
             else:
-                _article_time = \
+                _processed_time = \
                     self._get_date(item['date'][0][:10].split('-'))
 
-                if _article_time >= self.until_date:
+                if _processed_time >= self.until_date:
                     yield item
