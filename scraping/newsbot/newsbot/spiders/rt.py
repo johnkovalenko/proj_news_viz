@@ -17,7 +17,8 @@ class RussiaTodaySpider(NewsSpider):
         date_format="%Y-%m-%dT%H:%M:%S",
         text_path='//div[contains(@class, "article__text")]//text()',
         topics_path='//meta'
-        '[contains(@name, "mediator_theme")]/@content'
+        '[contains(@name, "mediator_theme")]/@content',
+        authors_path='_'
     )
 
     def parse(self, response):

@@ -1,12 +1,12 @@
-in this this folder we extract names
+Extracting names
 
 by @marishadorosh:
-* extracting_NER.ipynb - how create extraction
+* extracting_NER.ipynb - how to create extraction
 
 by @vtrokhymenko:
-* cleaned_names.ipynb - how extracted complete names
+* cleaned_names.ipynb - how names was extracted
 * cleaned_names_rd.ipynb - r&d extraction (don't use in prod)
-* cleanedNames.py - the main file which u can use for u using flashtext like this
+* cleanedNames.py - the main file which u can use for using flashtext like this
 
 ```
 from cleanedNames import KeyProc
@@ -24,5 +24,5 @@ print(cn.replaceKeywords(text))
 
 p.s.
 
-* data take from [this](print(cm.replace_keywords(text)))
-* about flashtext u can read [this](https://github.com/vi3k6i5/flashtext)
+* data from [here](https://newsviz.s3.nl-ams.scw.cloud/misc/cleaned_names.csv)
+* about flashtext u can read [here](https://github.com/vi3k6i5/flashtext)
