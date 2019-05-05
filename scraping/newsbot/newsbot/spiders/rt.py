@@ -6,7 +6,7 @@ from datetime import date
 
 
 class RussiaTodaySpider(NewsSpider):
-    name = 'rt_bydate'
+    name = 'rt'
 
     start_urls = ['https://russian.rt.com/sitemap.xml']
 
@@ -65,8 +65,8 @@ class RussiaTodaySpider(NewsSpider):
             except KeyError:
                 print('Error. No date value.')
             else:
-                _processed_time = \
-                    self._get_date(item['date'][0][:10].split('-'))
+                raw_date = item['date'][0][:10].split('-')
+                processed_date = self._get_date(raw_date)
 
-                if _processed_time >= self.until_date:
+                if processed_date >= self.until_date:
                     yield item
